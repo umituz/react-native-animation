@@ -1,0 +1,55 @@
+{
+  "name": "@umituz/react-native-animation",
+  "version": "1.0.0",
+  "description": "Universal animation utilities and hooks for React Native apps - React Native Animated API based",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf lib",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run build",
+    "version:patch": "npm version patch -m 'chore: release v%s'",
+    "version:minor": "npm version minor -m 'chore: release v%s'",
+    "version:major": "npm version major -m 'chore: release v%s'"
+  },
+  "keywords": [
+    "react-native",
+    "animation",
+    "animated",
+    "hooks",
+    "utilities",
+    "bottom-sheet",
+    "splash-screen",
+    "staggered-entrance"
+  ],
+  "author": "Ümit UZ <umit@umituz.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/umituz/react-native-animation"
+  },
+  "peerDependencies": {
+    "react": ">=18.2.0",
+    "react-native": ">=0.74.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/react": "^18.2.45",
+    "@types/react-native": "^0.73.0",
+    "react": ">=18.2.0",
+    "react-native": ">=0.74.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib",
+    "src",
+    "README.md",
+    "LICENSE"
+  ]
+}
+
