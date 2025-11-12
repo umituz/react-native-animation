@@ -31,22 +31,30 @@ export const useReanimatedReady = (): boolean => {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Wait for Reanimated to be fully initialized
-    // Reanimated's internal hooks (like useAnimatedLayout, useAnimatedDetents) 
-    // access layoutState.get during initialization, so we need to wait for Reanimated to be fully ready
-    // Increased delay to 800ms to ensure all internal state is initialized
+    // CRITICAL: Wait for Reanimated to be fully initialized
+    // Reanimated's internal hooks (useAnimatedLayout, useAnimatedDetents, etc.)
+    // access containerLayoutState.get during initialization
+    // If we don't wait, we get "containerLayoutState.get is not a function" errors
+    // 
+    // Strategy:
+    // 1. Wait 1000ms for Reanimated to initialize (increased from 800ms)
+    // 2. Use 5 requestAnimationFrame calls to ensure all worklets are ready
+    // 3. This ensures @gorhom/bottom-sheet's internal hooks can safely access Reanimated state
     const timer = setTimeout(() => {
-      // Use multiple animation frames to ensure Reanimated worklets are ready
+      // Use multiple animation frames to ensure Reanimated worklets are fully ready
+      // Each frame ensures the previous frame's worklets have completed
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              setIsReady(true);
+              requestAnimationFrame(() => {
+                setIsReady(true);
+              });
             });
           });
         });
       });
-    }, 800); // Increased delay to ensure Reanimated is fully initialized
+    }, 1000); // Increased delay to 1000ms to ensure Reanimated is fully initialized
 
     return () => {
       clearTimeout(timer);
