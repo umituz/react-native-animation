@@ -37,24 +37,19 @@ export const useReanimatedReady = (): boolean => {
     // If we don't wait, we get "containerLayoutState.get is not a function" errors
     // 
     // Strategy:
-    // 1. Wait 1000ms for Reanimated to initialize (increased from 800ms)
-    // 2. Use 5 requestAnimationFrame calls to ensure all worklets are ready
+    // 1. Wait 500ms for Reanimated to initialize (minimal delay)
+    // 2. Use 3 requestAnimationFrame calls to ensure worklets are ready
     // 3. This ensures @gorhom/bottom-sheet's internal hooks can safely access Reanimated state
     const timer = setTimeout(() => {
-      // Use multiple animation frames to ensure Reanimated worklets are fully ready
-      // Each frame ensures the previous frame's worklets have completed
+      // Use multiple animation frames to ensure Reanimated worklets are ready
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                setIsReady(true);
-              });
-            });
+            setIsReady(true);
           });
         });
       });
-    }, 1000); // Increased delay to 1000ms to ensure Reanimated is fully initialized
+    }, 500); // Minimal delay to ensure Reanimated is initialized
 
     return () => {
       clearTimeout(timer);
