@@ -32,18 +32,21 @@ export const useReanimatedReady = (): boolean => {
 
   useEffect(() => {
     // Wait for Reanimated to be fully initialized
-    // Reanimated's internal hooks (like useAnimatedDetents) access layoutState.get
-    // during initialization, so we need to wait for Reanimated to be fully ready
+    // Reanimated's internal hooks (like useAnimatedLayout, useAnimatedDetents) 
+    // access layoutState.get during initialization, so we need to wait for Reanimated to be fully ready
+    // Increased delay to 800ms to ensure all internal state is initialized
     const timer = setTimeout(() => {
       // Use multiple animation frames to ensure Reanimated worklets are ready
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            setIsReady(true);
+            requestAnimationFrame(() => {
+              setIsReady(true);
+            });
           });
         });
       });
-    }, 500); // Delay to ensure Reanimated is fully initialized
+    }, 800); // Increased delay to ensure Reanimated is fully initialized
 
     return () => {
       clearTimeout(timer);
