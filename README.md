@@ -80,12 +80,29 @@ const MyComponent = () => {
 - `createPinchGesture()` - Pinch/zoom gesture
 - `createLongPressGesture()` - Long press gesture
 
+### Reanimated Ready Check
+
+```tsx
+import { useReanimatedReady } from '@umituz/react-native-animation';
+
+const MyComponent = () => {
+  const isReady = useReanimatedReady();
+
+  if (!isReady) {
+    return null; // Don't render Reanimated components until ready
+  }
+
+  return <Animated.View>...</Animated.View>;
+};
+```
+
 ## API
 
 ### Hooks
 
 - `useAnimation()`: Hook for declarative animations
 - `useGesture()`: Hook for gesture handling
+- `useReanimatedReady()`: Hook to check if Reanimated is fully initialized
 
 ### Types
 

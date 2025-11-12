@@ -75,4 +75,5 @@ export {
   type PanGestureOptions,
   type PinchGestureOptions,
 } from './presentation/hooks/useGesture';
+export { useReanimatedReady } from './presentation/hooks/useReanimatedReady';
 
