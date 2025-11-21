@@ -60,12 +60,14 @@ export {
   GestureType,
   AnimationEasing,
   ANIMATION_CONSTANTS,
-  AnimationUtils,
 } from './domain/entities/Animation';
 export type {
   AnimationTimingConfig,
   AnimationSpringConfig,
 } from './domain/entities/Animation';
+
+// Infrastructure Layer - Services
+export { AnimationConfigService } from './infrastructure/services/AnimationConfigService';
 
 // Presentation Layer - Hooks
 export { useAnimation } from './presentation/hooks/useAnimation';

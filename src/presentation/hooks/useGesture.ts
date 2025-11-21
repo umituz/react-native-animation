@@ -1,48 +1,18 @@
 /**
  * useGesture Hook
  *
- * React hook for gesture handling using react-native-gesture-handler.
- * Provides simple API for common gesture patterns.
+ * Orchestrator hook that combines gesture creators and state.
+ * Single Responsibility: Compose and expose gesture functionality.
  */
 
-import { useCallback } from 'react';
-import {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  runOnJS,
-} from 'react-native-reanimated';
-import {
-  Gesture,
-  GestureDetector,
-} from 'react-native-gesture-handler';
-
-/**
- * Tap gesture options
- */
-export interface TapGestureOptions {
-  numberOfTaps?: number;
-  maxDuration?: number;
-  onTap?: () => void;
-}
-
-/**
- * Pan gesture options
- */
-export interface PanGestureOptions {
-  onStart?: () => void;
-  onUpdate?: (x: number, y: number) => void;
-  onEnd?: (x: number, y: number) => void;
-}
-
-/**
- * Pinch gesture options
- */
-export interface PinchGestureOptions {
-  onStart?: () => void;
-  onUpdate?: (scale: number) => void;
-  onEnd?: (scale: number) => void;
-}
+import { GestureDetector } from 'react-native-gesture-handler';
+import { useGestureState } from './useGestureState';
+import { useGestureCreators } from './useGestureCreators';
+import type {
+  TapGestureOptions,
+  PanGestureOptions,
+  PinchGestureOptions,
+} from './useGestureCreators';
 
 /**
  * Hook for gesture handling
@@ -61,149 +31,32 @@ export interface PinchGestureOptions {
  * );
  */
 export const useGesture = () => {
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const scale = useSharedValue(1);
-  const savedTranslateX = useSharedValue(0);
-  const savedTranslateY = useSharedValue(0);
-  const savedScale = useSharedValue(1);
-
-  /**
-   * Create tap gesture
-   */
-  const createTapGesture = useCallback(
-    (options: TapGestureOptions = {}) => {
-      const { numberOfTaps = 1, maxDuration = 500, onTap } = options;
-
-      return Gesture.Tap()
-        .numberOfTaps(numberOfTaps)
-        .maxDuration(maxDuration)
-        .onStart(() => {
-          if (onTap) {
-            runOnJS(onTap)();
-          }
-        });
-    },
-    []
-  );
-
-  /**
-   * Create pan gesture
-   */
-  const createPanGesture = useCallback(
-    (options: PanGestureOptions = {}) => {
-      const { onStart, onUpdate, onEnd } = options;
-
-      return Gesture.Pan()
-        .onStart(() => {
-          savedTranslateX.value = translateX.value;
-          savedTranslateY.value = translateY.value;
-          if (onStart) {
-            runOnJS(onStart)();
-          }
-        })
-        .onUpdate((event) => {
-          translateX.value = savedTranslateX.value + event.translationX;
-          translateY.value = savedTranslateY.value + event.translationY;
-          if (onUpdate) {
-            runOnJS(onUpdate)(translateX.value, translateY.value);
-          }
-        })
-        .onEnd(() => {
-          if (onEnd) {
-            runOnJS(onEnd)(translateX.value, translateY.value);
-          }
-        });
-    },
-    [translateX, translateY, savedTranslateX, savedTranslateY]
-  );
-
-  /**
-   * Create pinch gesture
-   */
-  const createPinchGesture = useCallback(
-    (options: PinchGestureOptions = {}) => {
-      const { onStart, onUpdate, onEnd } = options;
-
-      return Gesture.Pinch()
-        .onStart(() => {
-          savedScale.value = scale.value;
-          if (onStart) {
-            runOnJS(onStart)();
-          }
-        })
-        .onUpdate((event) => {
-          scale.value = savedScale.value * event.scale;
-          if (onUpdate) {
-            runOnJS(onUpdate)(scale.value);
-          }
-        })
-        .onEnd(() => {
-          if (onEnd) {
-            runOnJS(onEnd)(scale.value);
-          }
-        });
-    },
-    [scale, savedScale]
-  );
-
-  /**
-   * Create long press gesture
-   */
-  const createLongPressGesture = useCallback(
-    (options: { minDuration?: number; onLongPress?: () => void } = {}) => {
-      const { minDuration = 500, onLongPress } = options;
-
-      return Gesture.LongPress()
-        .minDuration(minDuration)
-        .onStart(() => {
-          if (onLongPress) {
-            runOnJS(onLongPress)();
-          }
-        });
-    },
-    []
-  );
-
-  /**
-   * Reset gesture state
-   */
-  const reset = useCallback(() => {
-    translateX.value = withSpring(0);
-    translateY.value = withSpring(0);
-    scale.value = withSpring(1);
-    savedTranslateX.value = 0;
-    savedTranslateY.value = 0;
-    savedScale.value = 1;
-  }, [translateX, translateY, scale, savedTranslateX, savedTranslateY, savedScale]);
-
-  /**
-   * Animated style for gesture transforms
-   */
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-  }));
+  const state = useGestureState();
+  const creators = useGestureCreators(state);
 
   return {
     // Gesture creators
-    createTapGesture,
-    createPanGesture,
-    createPinchGesture,
-    createLongPressGesture,
+    createTapGesture: creators.createTapGesture,
+    createPanGesture: creators.createPanGesture,
+    createPinchGesture: creators.createPinchGesture,
+    createLongPressGesture: creators.createLongPressGesture,
     // Shared values (for custom gestures)
-    translateX,
-    translateY,
-    scale,
+    translateX: state.translateX,
+    translateY: state.translateY,
+    scale: state.scale,
     // Utilities
-    reset,
+    reset: state.reset,
     // Animated style
-    animatedStyle,
+    animatedStyle: state.animatedStyle,
     // Re-export GestureDetector for convenience
     GestureDetector: GestureDetector as typeof GestureDetector,
   };
 };
+
+// Re-export types for convenience
+export type {
+  TapGestureOptions,
+  PanGestureOptions,
+  PinchGestureOptions,
+} from './useGestureCreators';
 
