@@ -78,4 +78,16 @@ export {
   type PinchGestureOptions,
 } from './presentation/hooks/useGesture';
 export { useReanimatedReady } from './presentation/hooks/useReanimatedReady';
+export { useFireworks } from './presentation/hooks/useFireworks';
+
+// Presentation Layer - Components
+export { Fireworks } from './presentation/components/Fireworks';
+export type { FireworksProps } from './presentation/components/Fireworks';
+
+// Domain Layer - Fireworks
+export type {
+  ParticleConfig,
+  FireworksConfig,
+} from './domain/entities/Fireworks';
+export { FIREWORKS_CONSTANTS } from './domain/entities/Fireworks';
 
