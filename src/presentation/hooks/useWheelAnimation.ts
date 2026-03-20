@@ -8,10 +8,13 @@ import {
   useAnimatedReaction,
 } from 'react-native-reanimated';
 
+export type SpinCompleteCallback = (winnerIndex: number) => void;
+export type SpinCompleteCallbackWithData = (result: { value: string; label: string }) => void;
+
 export interface WheelAnimationConfig {
   segmentsCount: number;
   spinDuration?: number;
-  onSpinComplete?: (winnerIndex: number) => void;
+  onSpinComplete?: SpinCompleteCallback | SpinCompleteCallbackWithData;
   onSpinTick?: (currentIndex: number) => void;
 }
 
