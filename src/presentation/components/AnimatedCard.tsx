@@ -1,11 +1,10 @@
-import React, { memo, useEffect, useImperativeHandle, forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { memo, useEffect, useImperativeHandle, forwardRef, ForwardedRef } from 'react';
+import { StyleSheet, ViewProps } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-  withSequence,
   runOnJS,
 } from 'react-native-reanimated';
 
@@ -13,7 +12,7 @@ export interface AnimatedCardProps {
   children: React.ReactNode;
   visible?: boolean;
   onAnimationEnd?: () => void;
-  style?: any;
+  style?: ViewProps['style'];
 }
 
 export interface AnimatedCardRef {
@@ -22,7 +21,8 @@ export interface AnimatedCardRef {
 }
 
 export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
-  ({ children, visible = true, onAnimationEnd, style }, ref) => {
+  (props: AnimatedCardProps, ref: ForwardedRef<AnimatedCardRef>) => {
+    const { children, visible = true, onAnimationEnd, style } = props;
     const opacity = useSharedValue(0);
     const scale = useSharedValue(0.9);
     const rotate = useSharedValue(-5);
@@ -64,14 +64,14 @@ export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
 
     useImperativeHandle(ref, () => ({
       animateIn: () => triggerIn(),
-      animateNext: (cb) => triggerNext(cb),
+      animateNext: (cb?: () => void) => triggerNext(cb),
     }));
 
     useEffect(() => {
       if (visible) {
         triggerIn();
       }
-    }, []);
+    }, [visible]);
 
     return (
       <Animated.View style={[styles.container, animatedStyle, style]}>
