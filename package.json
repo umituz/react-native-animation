@@ -1,6 +1,6 @@
 {
   "name": "@umituz/react-native-animation",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Centralized animation utilities and components for @umituz ecosystem",
   "main": "./src/index.ts",
   "scripts": {
