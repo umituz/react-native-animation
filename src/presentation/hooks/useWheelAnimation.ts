@@ -115,47 +115,66 @@ export function useWheelAnimation({
             console.log('[useWheelAnimation] Animation finished:', { finished });
           }
 
-          isSpinningRef.current = false;
+          try {
+            isSpinningRef.current = false;
 
-          if (finished && onSpinComplete) {
-            // Calculate winner based on final stopping point
-            const normalizedAngle = ((finalValue % 360) + 360) % 360;
-            const pointerAngleOnWheel = (360 - normalizedAngle) % 360;
-            const degreesPerSegment = 360 / segmentsCount;
-            const winnerIndex = Math.floor(pointerAngleOnWheel / degreesPerSegment) % segmentsCount;
+            if (finished && onSpinComplete) {
+              // Calculate winner based on final stopping point
+              const normalizedAngle = ((finalValue % 360) + 360) % 360;
+              const pointerAngleOnWheel = (360 - normalizedAngle) % 360;
+              const degreesPerSegment = 360 / segmentsCount;
+              const winnerIndex = Math.floor(pointerAngleOnWheel / degreesPerSegment) % segmentsCount;
 
+              if (__DEV__) {
+                console.log('[useWheelAnimation] Winner calculation:', {
+                  finalValue,
+                  normalizedAngle,
+                  pointerAngleOnWheel,
+                  winnerIndex,
+                  hasSegments: !!(segments && segments.length > 0)
+                });
+              }
+
+              // Determine callback type based on whether segments are provided
+              const useDataCallback = segments && segments.length > 0;
+
+              if (useDataCallback && segments[winnerIndex]) {
+                // Callback expects { value, label }
+                const jsCallback = () => {
+                  try {
+                    if (__DEV__) {
+                      console.log('[useWheelAnimation] Calling data callback:', segments[winnerIndex]);
+                    }
+                    (onSpinComplete as SpinCompleteCallbackWithData)({ value: segments[winnerIndex].value, label: segments[winnerIndex].label });
+                  } catch (error) {
+                    if (__DEV__) {
+                      console.error('[useWheelAnimation] Data callback error:', error);
+                    }
+                  }
+                };
+                runOnJS(jsCallback)();
+              } else {
+                // Callback expects index
+                const jsCallback = () => {
+                  try {
+                    if (__DEV__) {
+                      console.log('[useWheelAnimation] Calling index callback:', winnerIndex);
+                    }
+                    (onSpinComplete as SpinCompleteCallback)(winnerIndex);
+                  } catch (error) {
+                    if (__DEV__) {
+                      console.error('[useWheelAnimation] Index callback error:', error);
+                    }
+                  }
+                };
+                runOnJS(jsCallback)();
+              }
+            }
+          } catch (error) {
             if (__DEV__) {
-              console.log('[useWheelAnimation] Winner calculation:', {
-                finalValue,
-                normalizedAngle,
-                pointerAngleOnWheel,
-                winnerIndex,
-                hasSegments: !!(segments && segments.length > 0)
-              });
+              console.error('[useWheelAnimation] Completion callback error:', error);
             }
-
-            // Determine callback type based on whether segments are provided
-            const useDataCallback = segments && segments.length > 0;
-
-            if (useDataCallback && segments[winnerIndex]) {
-              // Callback expects { value, label }
-              const jsCallback = () => {
-                if (__DEV__) {
-                  console.log('[useWheelAnimation] Calling data callback:', segments[winnerIndex]);
-                }
-                (onSpinComplete as SpinCompleteCallbackWithData)({ value: segments[winnerIndex].value, label: segments[winnerIndex].label });
-              };
-              runOnJS(jsCallback)();
-            } else {
-              // Callback expects index
-              const jsCallback = () => {
-                if (__DEV__) {
-                  console.log('[useWheelAnimation] Calling index callback:', winnerIndex);
-                }
-                (onSpinComplete as SpinCompleteCallback)(winnerIndex);
-              };
-              runOnJS(jsCallback)();
-            }
+            isSpinningRef.current = false;
           }
         }
       );
