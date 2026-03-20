@@ -35,5 +35,8 @@
     "src",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "dependencies": {
+    "@umituz/react-native-animation": "^1.0.7"
+  }
 }

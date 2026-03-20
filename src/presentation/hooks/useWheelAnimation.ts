@@ -11,8 +11,14 @@ import {
 export type SpinCompleteCallback = (winnerIndex: number) => void;
 export type SpinCompleteCallbackWithData = (result: { value: string; label: string }) => void;
 
+export interface WheelSegment {
+  value: string;
+  label: string;
+}
+
 export interface WheelAnimationConfig {
   segmentsCount: number;
+  segments?: WheelSegment[];  // Optional: provide segment data for data callbacks
   spinDuration?: number;
   onSpinComplete?: SpinCompleteCallback | SpinCompleteCallbackWithData;
   onSpinTick?: (currentIndex: number) => void;
@@ -20,6 +26,7 @@ export interface WheelAnimationConfig {
 
 export function useWheelAnimation({
   segmentsCount,
+  segments,
   spinDuration = 5000,
   onSpinComplete,
   onSpinTick,
@@ -62,12 +69,27 @@ export function useWheelAnimation({
           const pointerAngleOnWheel = (360 - normalizedAngle) % 360;
           const degreesPerSegment = 360 / segmentsCount;
           const winnerIndex = Math.floor(pointerAngleOnWheel / degreesPerSegment) % segmentsCount;
-          
-          runOnJS(onSpinComplete)(winnerIndex);
+
+          // Determine callback type based on whether segments are provided
+          const useDataCallback = segments && segments.length > 0;
+
+          if (useDataCallback && segments[winnerIndex]) {
+            // Callback expects { value, label }
+            const jsCallback = () => {
+              (onSpinComplete as SpinCompleteCallbackWithData)({ value: segments[winnerIndex].value, label: segments[winnerIndex].label });
+            };
+            runOnJS(jsCallback)();
+          } else {
+            // Callback expects index
+            const jsCallback = () => {
+              (onSpinComplete as SpinCompleteCallback)(winnerIndex);
+            };
+            runOnJS(jsCallback)();
+          }
         }
       }
     );
-  }, [rotation, spinDuration, segmentsCount, onSpinComplete]);
+  }, [rotation, spinDuration, segmentsCount, segments, onSpinComplete]);
 
   const reset = useCallback(() => {
     cancelAnimation(rotation);
