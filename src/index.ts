@@ -21,9 +21,10 @@ export {
   useAnimatedReaction,
   SharedValue,
   cancelAnimation,
-  Animated,
   createAnimatedComponent,
-  type AnimatedStyleProp,
-  type AnimatedProps,
+  type AnimatedStyle,
   type SharedValue as SharedValueType,
 } from "react-native-reanimated";
+
+// Animated is a default export, need to re-export it separately
+export { default as Animated } from "react-native-reanimated";
