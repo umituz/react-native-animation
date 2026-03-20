@@ -15,6 +15,7 @@ export {
   withSpring,
   withSequence,
   withRepeat,
+  withDelay,
   Easing,
   runOnJS,
   useAnimatedReaction,
