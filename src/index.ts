@@ -22,9 +22,10 @@ export {
   SharedValue,
   cancelAnimation,
   createAnimatedComponent,
-  type AnimatedStyle,
-  type SharedValue as SharedValueType,
 } from "react-native-reanimated";
 
-// Animated is a default export, need to re-export it separately
-export { default as Animated } from "react-native-reanimated";
+// Re-export Animated as both default and named export
+// This allows: import Animated from ... and import { Animated } from ...
+import Animated from "react-native-reanimated";
+export { Animated };
+export default Animated;
