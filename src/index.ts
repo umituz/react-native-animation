@@ -24,8 +24,11 @@ export {
   createAnimatedComponent,
 } from "react-native-reanimated";
 
-// Re-export Animated as both default and named export
-// This allows: import Animated from ... and import { Animated } from ...
+// Import Animated default export
 import Animated from "react-native-reanimated";
-export { Animated };
+
+// Export Animated namespace with all its properties
+export * from "react-native-reanimated";
+
+// Also export Animated as default
 export default Animated;
