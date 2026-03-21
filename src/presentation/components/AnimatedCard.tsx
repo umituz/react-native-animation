@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useImperativeHandle, forwardRef, ForwardedRef } from 'react';
-import { StyleSheet, ViewProps, Dimensions } from 'react-native';
+import { StyleSheet, ViewProps } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,8 +8,7 @@ import Animated, {
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { useResponsive } from '@umituz/react-native-design-system/responsive';
 
 export interface AnimatedCardProps {
   children: React.ReactNode;
@@ -32,7 +31,8 @@ const SPRING_CONFIG = {
 export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
   (props: AnimatedCardProps, ref: ForwardedRef<AnimatedCardRef>) => {
     const { children, visible = true, onAnimationEnd, style } = props;
-    
+    const responsive = useResponsive();
+
     const opacity = useSharedValue(0);
     const scale = useSharedValue(0.8);
     const rotate = useSharedValue(0);
@@ -52,9 +52,9 @@ export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
     const triggerIn = (callback?: () => void) => {
       // Randomize entry point to avoid "always top-left"
       const directions = [
-        { x: -SCREEN_WIDTH * 0.5, y: 50, r: -15 }, // Left
-        { x: SCREEN_WIDTH * 0.5, y: 50, r: 15 },  // Right
-        { x: 0, y: SCREEN_HEIGHT * 0.3, r: 0 },    // Bottom
+        { x: -responsive.width * 0.5, y: 50, r: -15 }, // Left
+        { x: responsive.width * 0.5, y: 50, r: 15 },  // Right
+        { x: 0, y: responsive.height * 0.3, r: 0 },    // Bottom
       ];
       
       const dir = directions[Math.floor(Math.random() * directions.length)];
@@ -79,7 +79,7 @@ export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
       // Exit animation (swipe up and away)
       opacity.value = withTiming(0, { duration: 300 });
       scale.value = withTiming(0.9, { duration: 300 });
-      translateY.value = withTiming(-SCREEN_HEIGHT * 0.4, { duration: 350 });
+      translateY.value = withTiming(-responsive.height * 0.4, { duration: 350 });
       rotate.value = withTiming(Math.random() > 0.5 ? 10 : -10, { duration: 300 }, () => {
         runOnJS(triggerIn)(callback);
       });
