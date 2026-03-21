@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useImperativeHandle, forwardRef, ForwardedRef } from 'react';
-import { StyleSheet, ViewProps, Dimensions } from 'react-native';
+import { StyleSheet, ViewProps } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -8,12 +8,7 @@ import Animated, {
   runOnJS,
   interpolate,
 } from 'react-native-reanimated';
-
-// Fallback dimensions when design-system is not available
-const useDimensions = () => ({
-  width: Dimensions.get('window').width,
-  height: Dimensions.get('window').height,
-});
+import { useResponsive } from '@umituz/react-native-design-system/responsive';
 
 export interface AnimatedCardProps {
   children: React.ReactNode;
@@ -58,7 +53,7 @@ const ANIMATION_TIMING = {
 export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
   (props: AnimatedCardProps, ref: ForwardedRef<AnimatedCardRef>) => {
     const { children, visible = true, onAnimationEnd, style } = props;
-    const responsive = useDimensions();
+    const responsive = useResponsive();
 
     const opacity = useSharedValue(0);
     const scale = useSharedValue(0.8);
