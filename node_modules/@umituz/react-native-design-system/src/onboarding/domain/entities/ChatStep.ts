@@ -1,0 +1,72 @@
+/**
+ * Chat Step Entity
+ *
+ * Defines a single step in chat-based onboarding flow
+ * Generic and reusable across all apps
+ */
+
+export type ChatMascotState = "idle" | "thinking" | "reacting" | "excited" | "speaking";
+
+export interface ChatOption {
+  /** Display label for the option */
+  label: string;
+
+  /** Value to be stored when selected */
+  value: string;
+
+  /** Next step ID to navigate to */
+  next: string;
+
+  /** Optional icon name (from icon library) */
+  icon?: string;
+}
+
+export interface ChatStep {
+  /** Unique step identifier */
+  id: string;
+
+  /** Messages to display in chat bubbles */
+  messages: string[];
+
+  /** Optional mascot animation state */
+  mascotState?: ChatMascotState;
+
+  /** Delay before showing this step (ms) */
+  delay?: number;
+
+  /** Available options for user to select */
+  options?: ChatOption[];
+
+  /** Auto-advance to next step after delay */
+  autoNext?: string;
+
+  /** Manual next step ID (for input steps) */
+  next?: string;
+
+  /** Mark as completion step */
+  isComplete?: boolean;
+
+  /** Show persona summary card */
+  showPersonaSummary?: boolean;
+
+  /** Show insights section */
+  showInsights?: boolean;
+
+  /** Show matches section */
+  showMatches?: boolean;
+
+  /** Show phase visualizer */
+  showPhaseVisualizer?: boolean;
+
+  /** Show name input field */
+  isNameInput?: boolean;
+
+  /** Allow skipping name input if empty */
+  skipIfEmpty?: boolean;
+}
+
+/**
+ * Chat Onboarding Flow
+ * Record of step ID to step configuration
+ */
+export type ChatOnboardingFlow = Record<string, ChatStep>;

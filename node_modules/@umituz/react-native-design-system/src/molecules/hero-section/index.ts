@@ -1,0 +1,6 @@
+/**
+ * Hero Section Component
+ */
+
+export { HeroSection } from './HeroSection';
+export type { HeroSectionProps } from './types';

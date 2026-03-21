@@ -1,0 +1,61 @@
+/**
+ * Media Picker Strategy Interface
+ *
+ * Strategy pattern for different media picker types.
+ * Allows MediaPickerService to support camera, video, and library pickers polymorphically.
+ */
+
+import type { MediaLibraryPermission } from '../entities/Media';
+
+/**
+ * Common picker options
+ */
+export interface LaunchOptions {
+  allowsEditing?: boolean;
+  quality?: number;
+  aspect?: [number, number];
+  videoMaxDuration?: number;
+  videoMaxBitrate?: number;
+  videoQuality?: 'low' | 'medium' | 'high';
+  base64?: boolean;
+  exif?: boolean;
+  allowsMultipleSelection?: boolean;
+  selectionLimit?: number;
+  mediaTypes?: string;
+  maxFileSizeMB?: number;
+}
+
+/**
+ * Result from picker launch
+ */
+export interface PickerLaunchResult {
+  canceled: boolean;
+  assets?: Array<{
+    uri: string;
+    width?: number;
+    height?: number;
+    type?: 'image' | 'video';
+    duration?: number;
+    fileSize?: number;
+  }>;
+}
+
+/**
+ * Media picker strategy interface
+ */
+export interface PickerStrategy {
+  /**
+   * Get required permission for this picker type
+   */
+  getPermission(): Promise<MediaLibraryPermission>;
+
+  /**
+   * Launch the picker with options
+   */
+  launch(options: LaunchOptions): Promise<PickerLaunchResult>;
+
+  /**
+   * Strategy name for debugging
+   */
+  readonly name: string;
+}

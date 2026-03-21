@@ -1,0 +1,7 @@
+/**
+ * Confirmation Modal Components
+ */
+
+export * from './components';
+export { useConfirmationModal } from './useConfirmationModal';
+export type { ConfirmationModalProps, ConfirmationModalVariant, ConfirmationModalVariantConfig } from './types';

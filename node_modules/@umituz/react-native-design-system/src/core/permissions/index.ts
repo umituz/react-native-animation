@@ -1,0 +1,15 @@
+/**
+ * Core Permissions Module
+ *
+ * Generic permission handling with configurable methods and status mapping.
+ */
+
+export { PermissionHandler } from './domain/PermissionHandler';
+
+export type {
+  PermissionMethod,
+  PermissionStatus,
+  PermissionResult,
+  PermissionHandlerConfig,
+  PermissionMethods,
+} from './domain/types';

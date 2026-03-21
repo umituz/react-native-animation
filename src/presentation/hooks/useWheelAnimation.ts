@@ -53,8 +53,8 @@ export function useWheelAnimation({
 
       return currentIndex;
     },
-    (current: number, previous: number | undefined | null) => {
-      if (previous !== null && previous !== undefined && current !== previous && onSpinTick) {
+    (current: number, previous: number | null) => {
+      if (previous !== null && current !== previous && onSpinTick) {
         if (__DEV__) {
           console.log('[useWheelAnimation] Spin tick:', { current, previous });
         }

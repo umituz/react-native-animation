@@ -1,0 +1,5 @@
+/**
+ * Step Progress Component
+ */
+
+export { StepProgress } from './StepProgress';

@@ -3,11 +3,20 @@
  * Centralized Animation Package
  */
 
-export * from "./presentation/components/AnimatedCard";
-export * from "./presentation/hooks/useWheelAnimation";
+// Local exports
+export { AnimatedCard } from "./presentation/components/AnimatedCard";
+export type { AnimatedCardProps, AnimatedCardRef } from "./presentation/components/AnimatedCard";
+export { useWheelAnimation } from "./presentation/hooks/useWheelAnimation";
+export type {
+  SpinCompleteCallback,
+  SpinCompleteCallbackWithData,
+  WheelSegment,
+  WheelAnimationConfig,
+} from "./presentation/hooks/useWheelAnimation";
 export * from "./domain/entities/AnimationTypes";
 
 // Re-export react-native-reanimated for package-driven architecture
+export type { AnimatedStyle, SharedValue } from "react-native-reanimated";
 export {
   useSharedValue,
   useAnimatedStyle,
@@ -19,16 +28,12 @@ export {
   Easing,
   runOnJS,
   useAnimatedReaction,
-  SharedValue,
   cancelAnimation,
-  createAnimatedComponent,
 } from "react-native-reanimated";
 
-// Import Animated default export
+// Import and export Animated as default
 import Animated from "react-native-reanimated";
 
-// Export Animated namespace with all its properties
-export * from "react-native-reanimated";
-
-// Also export Animated as default
+// Export Animated namespace with all its components
+// Note: Use Animated.View, Animated.Text, etc. directly instead of importing them separately
 export default Animated;

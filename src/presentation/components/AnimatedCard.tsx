@@ -22,11 +22,33 @@ export interface AnimatedCardRef {
   animateNext: (callback?: () => void) => void;
 }
 
+// Animation configuration constants
 const SPRING_CONFIG = {
   damping: 15,
   stiffness: 100,
   mass: 1,
 };
+
+type EntryDirection = {
+  xOffsetRatio: number;
+  yOffset: number;
+  yOffsetRatio?: number;
+  rotation: number;
+};
+
+const ENTRY_DIRECTION_CONFIG: EntryDirection[] = [
+  { xOffsetRatio: -0.5, yOffset: 50, rotation: -15 }, // Left
+  { xOffsetRatio: 0.5, yOffset: 50, rotation: 15 },  // Right
+  { xOffsetRatio: 0, yOffset: 0, yOffsetRatio: 0.3, rotation: 0 }, // Bottom
+];
+
+const ANIMATION_TIMING = {
+  fadeInDuration: 500,
+  exitDuration: 300,
+  exitFadeDuration: 300,
+  exitSlideDuration: 350,
+  initialScale: 0.85,
+} as const;
 
 export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
   (props: AnimatedCardProps, ref: ForwardedRef<AnimatedCardRef>) => {
@@ -51,21 +73,19 @@ export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
 
     const triggerIn = (callback?: () => void) => {
       // Randomize entry point to avoid "always top-left"
-      const directions = [
-        { x: -responsive.width * 0.5, y: 50, r: -15 }, // Left
-        { x: responsive.width * 0.5, y: 50, r: 15 },  // Right
-        { x: 0, y: responsive.height * 0.3, r: 0 },    // Bottom
-      ];
-      
-      const dir = directions[Math.floor(Math.random() * directions.length)];
-      
-      opacity.value = 0;
-      scale.value = 0.85;
-      translateX.value = dir.x;
-      translateY.value = dir.y;
-      rotate.value = dir.r;
+      const dirIndex = Math.floor(Math.random() * ENTRY_DIRECTION_CONFIG.length);
+      const dir = ENTRY_DIRECTION_CONFIG[dirIndex];
 
-      opacity.value = withTiming(1, { duration: 500 });
+      const xOffset = dir.xOffsetRatio * responsive.width;
+      const yOffset = dir.yOffsetRatio ? dir.yOffsetRatio * responsive.height : dir.yOffset;
+
+      opacity.value = 0;
+      scale.value = ANIMATION_TIMING.initialScale;
+      translateX.value = xOffset;
+      translateY.value = yOffset;
+      rotate.value = dir.rotation;
+
+      opacity.value = withTiming(1, { duration: ANIMATION_TIMING.fadeInDuration });
       scale.value = withSpring(1, SPRING_CONFIG);
       translateX.value = withSpring(0, SPRING_CONFIG);
       translateY.value = withSpring(0, SPRING_CONFIG);
@@ -77,10 +97,12 @@ export const AnimatedCard = memo(forwardRef<AnimatedCardRef, AnimatedCardProps>(
 
     const triggerNext = (callback?: () => void) => {
       // Exit animation (swipe up and away)
-      opacity.value = withTiming(0, { duration: 300 });
-      scale.value = withTiming(0.9, { duration: 300 });
-      translateY.value = withTiming(-responsive.height * 0.4, { duration: 350 });
-      rotate.value = withTiming(Math.random() > 0.5 ? 10 : -10, { duration: 300 }, () => {
+      const rotationDirection = Math.random() > 0.5 ? 10 : -10;
+
+      opacity.value = withTiming(0, { duration: ANIMATION_TIMING.exitDuration });
+      scale.value = withTiming(0.9, { duration: ANIMATION_TIMING.exitDuration });
+      translateY.value = withTiming(-responsive.height * 0.4, { duration: ANIMATION_TIMING.exitSlideDuration });
+      rotate.value = withTiming(rotationDirection, { duration: ANIMATION_TIMING.exitDuration }, () => {
         runOnJS(triggerIn)(callback);
       });
     };

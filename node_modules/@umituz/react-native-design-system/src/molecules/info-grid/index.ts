@@ -1,0 +1,6 @@
+/**
+ * Info Grid Component
+ */
+
+export { InfoGrid } from './InfoGrid';
+export type { InfoGridProps, InfoGridItem } from './types';
